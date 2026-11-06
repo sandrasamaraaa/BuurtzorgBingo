@@ -28,15 +28,32 @@ const questions=[
 {id:'crisis',term:'Crisis accountability',stage:2,q:'What did Buurtzorg do during COVID-19 when fast coordination was necessary?',options:['Stop sharing guidance between teams','Create an emergency communication effort with a hotline and shared Q&A','Replace every nursing team with a new hierarchy','Rely only on annual gatherings'],a:1,why:'Crisis communication became more coordinated and centrally guided in response to urgent safety needs.'},
 {id:'care',term:'Nurse-led care paths',stage:3,q:'What is the key advantage of nurse-led care paths for the proposed learning approach?',options:['They prove every team must use identical procedures','They can share practitioner knowledge while leaving room for local judgement','They remove the need to evaluate clinical quality','They automatically guarantee increased productivity'],a:1,why:'Care paths provide a useful example of structured, practitioner-led knowledge sharing. Their reach does not by itself prove clinical effectiveness.'}
 ];
-// Layout: each completed line needs at least one Scene 3 concept, so no one can win before Q3.
-questions.splice(0,questions.length,...[questions[2],questions[0],questions[1],questions[3],questions[5],questions[4],questions[7],questions[6],questions[8]]);
 const allLines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+// ---------- random card per phone ----------
+// Rule kept from the original design: every winning line contains a Scene 3 concept, so nobody can win before LEARN.
+// With 3 Scene 3 squares on a 3x3 grid, the only placements that block all 8 lines are the two diagonals,
+// so Scene 3 always sits on a diagonal (centre included). WHICH concept goes where is random.
+const bank=[...questions];
+const byId=id=>bank.find(q=>q.id===id);
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function makeLayout(){
+  const s3=shuffle(bank.filter(q=>q.stage===3).map(q=>q.id));
+  const rest=shuffle(bank.filter(q=>q.stage!==3).map(q=>q.id));
+  const diag=Math.random()<.5?[0,4,8]:[2,4,6];
+  const out=new Array(9).fill(null);diag.forEach((pos,k)=>out[pos]=s3[k]);
+  let r=0;for(let i=0;i<9;i++)if(!out[i])out[i]=rest[r++];
+  return out}
+function validLayout(l){return Array.isArray(l)&&l.length===9&&new Set(l).size===9&&l.every(id=>byId(id))&&allLines.every(line=>line.some(i=>byId(l[i]).stage===3))}
 
 // ---------- local state (one card per session) ----------
 const key='buurtzorg-bingo-'+SESSION_ID;
-let data={name:'',done:[],stage:1,mistakes:0,bingoSent:false};
-try{const p=JSON.parse(localStorage.getItem(key));if(p&&Array.isArray(p.done)&&[1,2,3].includes(p.stage))data={name:typeof p.name==='string'?p.name:'',done:p.done.filter(x=>questions.some(q=>q.id===x)),stage:p.stage,mistakes:Number.isInteger(p.mistakes)?p.mistakes:0,bingoSent:!!p.bingoSent}}catch(e){}
+let data={name:'',done:[],stage:1,mistakes:0,bingoSent:false,layout:null};
+try{const p=JSON.parse(localStorage.getItem(key));if(p&&Array.isArray(p.done)&&[1,2,3].includes(p.stage))data={name:typeof p.name==='string'?p.name:'',done:p.done.filter(x=>questions.some(q=>q.id===x)),stage:p.stage,mistakes:Number.isInteger(p.mistakes)?p.mistakes:0,bingoSent:!!p.bingoSent,layout:p.layout}}catch(e){}
 // keep the name across sessions/resets on this phone
+// same phone keeps the same card on reload; a new session gives a new card
+if(!validLayout(data.layout))data.layout=makeLayout();
+questions.splice(0,questions.length,...data.layout.map(byId));save();
 if(!data.name){try{data.name=localStorage.getItem('buurtzorg-bingo-name')||''}catch(e){}}
 function save(){try{localStorage.setItem(key,JSON.stringify(data));localStorage.setItem('buurtzorg-bingo-name',data.name)}catch(e){}}
 
@@ -100,7 +117,7 @@ $('close').addEventListener('click',close);$('next').addEventListener('click',cl
 
 function unlock(){const code=$('code').value.trim().toUpperCase();const error=$('error');error.classList.add('hidden');if(code==='FLAT'&&data.stage<2){data.stage=2}else if(code==='LEARN'&&data.stage>=2){data.stage=3}else if(code==='FLAT'&&data.stage>=2||code==='LEARN'&&data.stage===3){error.textContent='This scene is already open.';error.classList.remove('hidden');return}else if(code==='LEARN'&&data.stage===1){error.textContent='Unlock Scene 2 first.';error.classList.remove('hidden');return}else{error.textContent='That code is not recognised. Listen for the code announced by the host.';error.classList.remove('hidden');return}$('code').value='';save();draw();sync()}
 $('unlockBtn').addEventListener('click',unlock);$('code').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});
-$('reset').addEventListener('click',()=>{if(confirm('Reset your completed squares and scene progress? (A Bingo already on the leaderboard stays there.)')){data={name:data.name,done:[],stage:1,mistakes:data.mistakes,bingoSent:data.bingoSent};save();draw();close();sync()}});
+$('reset').addEventListener('click',()=>{if(confirm('Reset your completed squares and scene progress? (A Bingo already on the leaderboard stays there.)')){data={name:data.name,done:[],stage:1,mistakes:data.mistakes,bingoSent:data.bingoSent,layout:data.layout};save();draw();close();sync()}});
 
 // ---------- name ----------
 function askName(){$('nameOverlay').classList.remove('hidden');$('nameInput').value=data.name;setTimeout(()=>$('nameInput').focus(),50)}
