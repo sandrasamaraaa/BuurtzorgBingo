@@ -14,7 +14,7 @@ export const FIREBASE_CONFIG = {
 
 // Session name. Every session has its own leaderboard AND resets every phone's card.
 // Use "rehearsal-1", "rehearsal-2" ... while practising, then switch to "live" before class.
-export const SESSION_ID = "rehearsal-1";
+export const SESSION_ID = "rehearsal-2";
 
 // Seconds a question stays locked after a wrong answer (0 = no waiting).
 export const WRONG_COOLDOWN_SEC = 10;
