@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Buurtzorg Bingo · Live Leaderboard</title><style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#192833;background:#f3f6f3}*{box-sizing:border-box}body{margin:0}
+.wrap{max-width:1200px;margin:0 auto;padding:28px 32px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:22px}
+h1{font-size:40px;margin:0;color:#146452;letter-spacing:.02em}header p{margin:6px 0 0;color:#53656b;font-size:18px}
+.conn{font-size:15px;border-radius:999px;padding:7px 14px;background:#eef1ef;color:#66746e}.conn.online{background:#e4f4ed;color:#16694f}.conn.offline{background:#fff0ea;color:#9a4436}
+.podium{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:26px}
+.place{background:#fff;border:2px solid #dbe5df;border-radius:20px;padding:22px;text-align:center;min-height:170px;display:flex;flex-direction:column;justify-content:center}
+.place.filled{border-color:#dda52c;background:#fff8e6}.place .medal{font-size:44px}.place .nm{font-size:32px;font-weight:800;margin:6px 0;overflow-wrap:anywhere}.place .t{font-size:16px;color:#6b5a2a}.place.empty .nm{color:#a3aea8;font-weight:600;font-size:22px}
+h2{font-size:18px;text-transform:uppercase;letter-spacing:.06em;color:#1c7460;margin:0 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.p{background:#fff;border:1px solid #dbe5df;border-radius:14px;padding:12px 14px}.p.won{border-color:#36a477;background:#e9f8ef}
+.p .n{font-weight:750;font-size:18px;overflow-wrap:anywhere}.p .m{font-size:13px;color:#64736d;margin-top:3px}
+.dots{display:flex;gap:4px;margin-top:8px}.dots i{flex:1;height:8px;border-radius:4px;background:#e6eeeb}.dots i.on{background:#278b6b}
+.meta{display:flex;gap:18px;color:#53656b;font-size:16px;margin-bottom:12px}.empty{color:#8a9893}
+.setup{background:#fff0ea;border:1px solid #e9b9ab;color:#7d3427;padding:16px;border-radius:14px;font-size:16px;line-height:1.5}
+@media(max-width:700px){.podium{grid-template-columns:1fr}.wrap{padding:16px}h1{font-size:28px}}
+</style></head><body><div class="wrap">
+<header><div><h1>BUURTZORG BINGO · LIVE</h1><p>First three Bingos win a prize</p></div><span id="conn" class="conn">Connecting…</span></header>
+<div id="setup" class="setup" style="display:none"></div>
+<div class="podium" id="podium"></div>
+<div class="meta"><span id="countPlayers">0 players</span><span id="countBingo">0 Bingos</span><span id="session"></span></div>
+<h2>Everyone</h2><div class="grid" id="players"><p class="empty">Waiting for players to join…</p></div>
+</div>
+<script type="module">
+import {FIREBASE_CONFIG, SESSION_ID} from './config.js';
+const $=id=>document.getElementById(id);
+// ?session=live overrides config.js, handy for checking an old rehearsal
+const SESSION=new URLSearchParams(location.search).get('session')||SESSION_ID;
+$('session').textContent='Session: '+SESSION;
+function setConn(c,t){$('conn').className='conn '+c;$('conn').textContent=t}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function clock(ms){return new Date(ms).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+
+function render(players){
+  const winners=players.filter(p=>p.bingoMs).sort((a,b)=>a.bingoMs-b.bingoMs);
+  const first=winners.length?winners[0].bingoMs:0;
+  const medals=['🥇','🥈','🥉'];
+  $('podium').innerHTML=[0,1,2].map(i=>{const w=winners[i];
+    if(!w)return `<div class="place empty"><div class="medal">${medals[i]}</div><div class="nm">Waiting…</div></div>`;
+    const gap=i===0?'at '+clock(w.bingoMs):'+'+((w.bingoMs-first)/1000).toFixed(1)+' s after 1st';
+    return `<div class="place filled"><div class="medal">${medals[i]}</div><div class="nm">${esc(w.name)}</div><div class="t">${gap}</div></div>`}).join('');
+  $('countPlayers').textContent=players.length+(players.length===1?' player':' players');
+  $('countBingo').textContent=winners.length+(winners.length===1?' Bingo':' Bingos');
+  const rank=new Map(winners.map((w,i)=>[w.id,i+1]));
+  const list=[...players].sort((a,b)=>(rank.get(a.id)||99)-(rank.get(b.id)||99)||b.done-a.done||a.name.localeCompare(b.name));
+  $('players').innerHTML=list.length?list.map(p=>{const r=rank.get(p.id);
+    return `<div class="p${r?' won':''}"><div class="n">${r?'#'+r+' ':''}${esc(p.name)}</div><div class="m">${p.done}/9 ✓ · Scene ${p.stage} · ${p.mistakes} wrong</div><div class="dots">${Array.from({length:9},(_,i)=>`<i class="${i<p.done?'on':''}"></i>`).join('')}</div></div>`}).join('')
+    :'<p class="empty">Waiting for players to join…</p>';
+}
+
+(async()=>{
+  if(!FIREBASE_CONFIG||!FIREBASE_CONFIG.apiKey||String(FIREBASE_CONFIG.apiKey).startsWith('PASTE')){
+    setConn('offline','Not set up');$('setup').style.display='block';$('setup').textContent='Paste your Firebase config into config.js first.';render([]);return}
+  try{
+    const base='https://www.gstatic.com/firebasejs/10.14.1/';
+    const [appM,fsM]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-firestore.js')]);
+    const db=fsM.getFirestore(appM.initializeApp(FIREBASE_CONFIG));
+    fsM.onSnapshot(fsM.collection(db,'sessions',SESSION,'players'),snap=>{
+      const players=snap.docs.map(d=>{const x=d.data();return{id:d.id,name:x.name||'?',done:x.done||0,stage:x.stage||1,mistakes:x.mistakes||0,bingoMs:x.bingoAt&&x.bingoAt.toMillis?x.bingoAt.toMillis():0}});
+      setConn('online','● Live');render(players);
+    },err=>{console.error(err);setConn('offline','Connection error: check rules');$('setup').style.display='block';$('setup').textContent='Firebase refused the read: '+err.message});
+  }catch(e){console.error(e);setConn('offline','Offline')}
+})();
+render([]);
+</script></body></html>

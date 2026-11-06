@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Buurtzorg Bingo · Leadership Communication</title><style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#192833;background:#f3f6f3}*{box-sizing:border-box}body{margin:0}.wrap{max-width:580px;margin:0 auto;padding:20px 16px 70px}header{text-align:center;padding:12px 0 18px}h1{font-size:30px;margin:0;color:#146452;letter-spacing:.02em}header p{margin:6px 0;color:#53656b}.panel{background:#fff;border:1px solid #dbe5df;border-radius:18px;padding:16px;box-shadow:0 4px 18px #162b2010;margin-bottom:14px}.instructions{font-size:14px;line-height:1.5;color:#435451}.status{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;font-weight:650;margin-bottom:10px}.pill{border-radius:999px;padding:7px 12px;background:#e4f4ed;color:#16694f}.progress{height:7px;background:#e6eeeb;border-radius:999px;overflow:hidden;margin-bottom:18px}.progress>div{height:100%;width:0;background:#278b6b;transition:width .2s}.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.tile{appearance:none;cursor:pointer;background:#f1f6f3;border:2px solid #dde9e1;border-radius:13px;min-height:105px;padding:8px 5px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;font-size:13px;font-weight:750;color:#24413c;overflow-wrap:anywhere}.tile.done{background:#dcf4e6;border-color:#36a477;color:#176349}.tile.locked{background:#f1f1f1;color:#909a95;border-color:#e2e5e3;cursor:not-allowed}.tile small{font-size:19px}.tile:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #daa122;outline-offset:2px}.stages{display:grid;gap:9px}.stage{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #e8efea}.stage:last-child{border:0}.stage strong{display:block;font-size:14px}.stage span{font-size:12px;color:#66746e}.action{background:#176b55;border:0;border-radius:11px;padding:10px 13px;color:white;font-weight:700;cursor:pointer}.unlock{display:flex;gap:8px;margin-top:10px}.unlock input,.nameRow input{width:100%;min-width:0;border:1px solid #c8d9d0;border-radius:10px;padding:12px;font-size:16px}.unlock input{text-transform:uppercase;letter-spacing:.06em}.unlock button{min-width:80px}.error{color:#ae3c33;font-size:13px;margin:9px 0 0}.helper{font-size:12px;color:#64736d;margin-top:8px}.modalOverlay{position:fixed;inset:0;background:#0d211bbb;display:flex;align-items:center;justify-content:center;padding:14px;z-index:20}.modal{width:100%;max-width:520px;background:#fff;border-radius:17px;padding:20px;max-height:92vh;overflow:auto}.modal h2{font-size:20px;line-height:1.3}.modal h3{font-size:13px;text-transform:uppercase;color:#1c7460}.option{display:block;width:100%;text-align:left;background:#f4f7f5;color:#1f3330;border:1px solid #dbe6df;padding:13px;border-radius:12px;margin-bottom:9px;font-size:15px;line-height:1.4;cursor:pointer}.option:hover:not(:disabled){border-color:#269979}.option:disabled{cursor:default;opacity:.75}.option.correct{background:#dcf5e5;border-color:#278e67;opacity:1}.option.incorrect{background:#ffe7e1;border-color:#c06455}.feedback{font-size:14px;padding:12px;border-radius:10px;margin-top:10px;line-height:1.5}.feedback.good{background:#e0f4e9;color:#1b6147}.feedback.bad{background:#fff0ea;color:#9a4436}.footerButtons{display:flex;justify-content:space-between;gap:8px;margin-top:15px}button.secondary{border:1px solid #cad7d0;border-radius:10px;background:#fff;color:#3c5b4f;padding:10px 13px;font-weight:650;cursor:pointer}.win{background:#fff5db;border:2px solid #dda52c;padding:16px;border-radius:13px;text-align:center;margin:14px 0}.win strong{font-size:24px;color:#79540e}.win p{font-size:14px;margin:8px 0}.muted{font-size:12px;color:#68776f;text-align:center}#reset{margin-top:5px}.hidden{display:none!important}
+.who{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:#53656b;margin-bottom:12px}.who b{color:#192833}.conn{font-size:12px;border-radius:999px;padding:4px 10px;background:#eef1ef;color:#66746e;white-space:nowrap}.conn.online{background:#e4f4ed;color:#16694f}.conn.offline{background:#fff0ea;color:#9a4436}.nameRow{display:flex;gap:8px;margin-top:12px}
+@media(max-width:380px){.tile{min-height:95px;font-size:12px;padding:5px}.wrap{padding:14px 10px 50px}}
+</style></head><body><main class="wrap"><header><h1>BUURTZORG BINGO</h1><p>Leadership Communication · Group 2</p></header>
+<section class="panel"><div class="who"><span>Playing as <b id="playerName">…</b></span><span id="conn" class="conn">Connecting…</span></div><div class="instructions"><strong>How to play:</strong> Follow the Buurtzorg role-play. Tap an unlocked concept, answer its multiple-choice question, and earn a ✓. Complete <strong>three in a row, column, or diagonal</strong> to win. New concepts open as the presentation progresses. The first three Bingos appear live on the screen.</div></section>
+<section class="panel"><div class="status"><span id="statusText">0 of 9 completed</span><span id="stagePill" class="pill">Scene 1 open</span></div><div class="progress"><div id="bar"></div></div><div class="board" id="board" aria-label="Interactive bingo card"></div><div class="win hidden" id="win"><strong>🎉 BINGO!</strong><p id="winText">Your Bingo has been sent to the leaderboard.</p></div></section>
+<section class="panel"><h2 style="font-size:17px;margin:0 0 6px">Unlock the next scene</h2><p class="instructions" style="margin:5px 0">The host will announce one short code during the role-play.</p><div class="stages"><div class="stage"><div><strong>Scene 1: Communication &amp; empowerment</strong><span>Available from the beginning</span></div><span>✓ Open</span></div><div class="stage"><div><strong>Scene 2: Control &amp; self-management</strong><span>Code announced around Slide 6</span></div><span id="s2status">🔒 Locked</span></div><div class="stage"><div><strong>Scene 3: Organisational learning</strong><span>Code announced around Slide 8</span></div><span id="s3status">🔒 Locked</span></div></div><div class="unlock"><input id="code" placeholder="Enter scene code" autocomplete="off" aria-label="Scene unlock code"><button class="action" id="unlockBtn">Unlock</button></div><p id="error" class="error hidden" role="status"></p><p class="helper" id="helper">Correct answers unlock squares automatically. You can retry a question.</p></section>
+<button class="secondary" id="reset">Reset my card</button><p class="muted">Your card is saved on this phone. Only your name, number of ✓ and Bingo time are sent to the leaderboard.</p></main>
+
+<div class="modalOverlay hidden" id="overlay" role="dialog" aria-modal="true" aria-label="Bingo multiple choice question"><div class="modal"><h3 id="category"></h3><h2 id="question"></h2><div id="options"></div><div id="feedback"></div><div class="footerButtons"><button class="secondary" id="close">Back to card</button><button class="action hidden" id="next">Continue</button></div></div></div>
+
+<div class="modalOverlay hidden" id="nameOverlay" role="dialog" aria-modal="true" aria-label="Enter your name"><div class="modal"><h3>Welcome</h3><h2>What name should appear on the leaderboard?</h2><p class="instructions">Use your first name so the presenters can find you for the prize.</p><div class="nameRow"><input id="nameInput" maxlength="20" autocomplete="off" placeholder="e.g. Sandra"><button class="action" id="nameBtn">Start</button></div><p id="nameErr" class="error hidden">Please type a name (1 to 20 characters).</p></div></div>
+
+<script type="module">
+import {FIREBASE_CONFIG, SESSION_ID, WRONG_COOLDOWN_SEC} from './config.js';
+
+const questions=[
+{id:'self',term:'Self-management',stage:1,q:'Which decision can Buurtzorg nursing teams generally make themselves?',options:['Set national insurance reimbursement rates','Recruit team members and organise schedules','Change national healthcare laws','Appoint a regional middle manager'],a:1,why:'Teams manage staffing, schedules and many operational decisions. This illustrates self-determination.'},
+{id:'control',term:'Concertive control',stage:2,q:'Which example best illustrates concertive control?',options:['A regulator changes a safety standard','A patient makes a request','Nurses pressure one another to follow shared team norms','A director approves an emergency response'],a:2,why:'Concertive control describes members of a group enforcing norms through peer interaction, even without formal managers.'},
+{id:'learning',term:'Organisational learning',stage:3,q:'What does Els’s difficulty spreading her vitality-club idea illustrate?',options:['Useful local innovations do not automatically reach other teams','Nurses are forbidden to introduce new ideas','Coaches must approve every innovation','A practice is successful only if every team adopts it'],a:0,why:'Knowledge-sharing across many independent teams needs pathways that make valuable local experience discoverable.'},
+{id:'web',term:'BuurtzorgWeb',stage:1,q:'Which purpose is served by BuurtzorgWeb?',options:['Replacing all professional judgement','Sharing information and connecting teams','Assigning a line manager to each nurse','Eliminating team meetings'],a:1,why:'BuurtzorgWeb supports patient records, coordination, performance information and cross-team communication.'},
+{id:'threshold',term:'62% threshold',stage:2,q:'What does the 62% threshold refer to in the case?',options:['Proportion of nurses who need a coach','Minimum share of team hours devoted to billable patient care','Percentage of patients receiving digital care','Percentage of teams following care paths'],a:1,why:'The productivity threshold is an example of measurable organisational control within a flat structure.'},
+{id:'change',term:'Change communication',stage:3,q:'Which message best fits the group’s proposed nurse-led learning initiative?',options:['Head office will rank teams on compliance','All proposed care paths are compulsory','Try this nurse-tested practice, adapt it, and tell us what you learn','Teams with low productivity lose autonomy'],a:2,why:'The proposed change emphasises trusted peer messengers, feedback and voluntary learning while retaining mandatory safety requirements.'},
+{id:'coach',term:'Coaching leadership',stage:1,q:'When a nursing team faces a disagreement, what is a coach generally expected to do?',options:['Decide for the team','Help the team work toward its own answer','Introduce a permanent supervisor','Punish the team for asking for help'],a:1,why:'Coaching supports competence and self-determination without replacing team decision-making.'},
+{id:'crisis',term:'Crisis accountability',stage:2,q:'What did Buurtzorg do during COVID-19 when fast coordination was necessary?',options:['Stop sharing guidance between teams','Create an emergency communication effort with a hotline and shared Q&A','Replace every nursing team with a new hierarchy','Rely only on annual gatherings'],a:1,why:'Crisis communication became more coordinated and centrally guided in response to urgent safety needs.'},
+{id:'care',term:'Nurse-led care paths',stage:3,q:'What is the key advantage of nurse-led care paths for the proposed learning approach?',options:['They prove every team must use identical procedures','They can share practitioner knowledge while leaving room for local judgement','They remove the need to evaluate clinical quality','They automatically guarantee increased productivity'],a:1,why:'Care paths provide a useful example of structured, practitioner-led knowledge sharing. Their reach does not by itself prove clinical effectiveness.'}
+];
+// Layout: each completed line needs at least one Scene 3 concept, so no one can win before Q3.
+questions.splice(0,questions.length,...[questions[2],questions[0],questions[1],questions[3],questions[5],questions[4],questions[7],questions[6],questions[8]]);
+const allLines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+// ---------- local state (one card per session) ----------
+const key='buurtzorg-bingo-'+SESSION_ID;
+let data={name:'',done:[],stage:1,mistakes:0,bingoSent:false};
+try{const p=JSON.parse(localStorage.getItem(key));if(p&&Array.isArray(p.done)&&[1,2,3].includes(p.stage))data={name:typeof p.name==='string'?p.name:'',done:p.done.filter(x=>questions.some(q=>q.id===x)),stage:p.stage,mistakes:Number.isInteger(p.mistakes)?p.mistakes:0,bingoSent:!!p.bingoSent}}catch(e){}
+// keep the name across sessions/resets on this phone
+if(!data.name){try{data.name=localStorage.getItem('buurtzorg-bingo-name')||''}catch(e){}}
+function save(){try{localStorage.setItem(key,JSON.stringify(data));localStorage.setItem('buurtzorg-bingo-name',data.name)}catch(e){}}
+
+let current=null,answeredCorrect=false;const cooldownUntil={};let tick=null;
+const $=id=>document.getElementById(id);
+function win(){return allLines.some(line=>line.every(i=>data.done.includes(questions[i].id)))}
+
+// ---------- shared leaderboard (Firebase) ----------
+let net={ready:false};let syncing=false,syncAgain=false;
+function setConn(cls,text){const c=$('conn');c.className='conn '+cls;c.textContent=text}
+function configured(){return FIREBASE_CONFIG&&FIREBASE_CONFIG.apiKey&&!String(FIREBASE_CONFIG.apiKey).startsWith('PASTE')}
+async function initNet(){
+  if(!configured()){setConn('offline','Leaderboard not set up');return}
+  try{
+    const base='https://www.gstatic.com/firebasejs/10.14.1/';
+    const [appM,authM,fsM]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-auth.js'),import(base+'firebase-firestore.js')]);
+    const app=appM.initializeApp(FIREBASE_CONFIG);
+    const cred=await authM.signInAnonymously(authM.getAuth(app)); // same phone keeps the same id
+    net={ready:true,uid:cred.user.uid,db:fsM.getFirestore(app),doc:fsM.doc,setDoc:fsM.setDoc,ts:fsM.serverTimestamp};
+    setConn('online','● Live');sync();
+  }catch(e){console.error(e);setConn('offline','Offline: card still works')}
+}
+async function sync(){
+  if(!net.ready||!data.name)return;
+  if(syncing){syncAgain=true;return}
+  syncing=true;
+  try{
+    const ref=net.doc(net.db,'sessions',SESSION_ID,'players',net.uid);
+    const payload={name:data.name,done:data.done.length,stage:data.stage,mistakes:data.mistakes,updatedAt:net.ts()};
+    const sendingBingo=win()&&!data.bingoSent;
+    if(sendingBingo)payload.bingoAt=net.ts(); // the SERVER clock decides who was first, not the phone clock
+    await net.setDoc(ref,payload,{merge:true});
+    if(sendingBingo){data.bingoSent=true;save();draw()}
+    setConn('online','● Live');
+  }catch(e){console.error(e);setConn('offline','Not synced, retrying…');setTimeout(sync,4000)}
+  finally{syncing=false;if(syncAgain){syncAgain=false;sync()}}
+}
+
+// ---------- UI ----------
+function draw(){const board=$('board');board.innerHTML='';questions.forEach((q,i)=>{const done=data.done.includes(q.id);const locked=data.stage<q.stage;const b=document.createElement('button');b.className='tile'+(done?' done':'')+(locked?' locked':'');b.disabled=done||locked;b.setAttribute('aria-label',q.term+(done?' completed':locked?' locked':''));const sym=document.createElement('small');sym.textContent=done?'✓':locked?'🔒':'?';const label=document.createElement('span');label.textContent=q.term;b.append(sym,label);b.addEventListener('click',()=>openQuestion(i));board.appendChild(b)});
+$('statusText').textContent=data.done.length+' of 9 completed';$('bar').style.width=(data.done.length/9*100)+'%';$('stagePill').textContent='Scene '+data.stage+' open';$('s2status').textContent=data.stage>=2?'✓ Open':'🔒 Locked';$('s3status').textContent=data.stage>=3?'✓ Open':'🔒 Locked';
+$('playerName').textContent=data.name||'…';
+const w=win();$('win').classList.toggle('hidden',!w);
+$('winText').textContent=!net.ready?'Show this screen to a presenter to claim your Bingo.':data.bingoSent?'Your Bingo is on the leaderboard. Check the big screen!':'Sending your Bingo to the leaderboard…';
+$('helper').textContent=WRONG_COOLDOWN_SEC>0?'Correct answers unlock squares automatically. A wrong answer locks that question for '+WRONG_COOLDOWN_SEC+' seconds, then you can retry.':'Correct answers unlock squares automatically. You can retry a question.'}
+
+function renderCooldown(){
+  if(current===null)return;const q=questions[current];const left=Math.ceil(((cooldownUntil[q.id]||0)-Date.now())/1000);
+  const opts=Array.from($('options').children);
+  if(left>0&&!answeredCorrect){opts.forEach(x=>x.disabled=true);const f=$('feedback');f.innerHTML='';const p=document.createElement('div');p.className='feedback bad';p.textContent='Not quite. Listen to the role-play and try again in '+left+' s.';f.appendChild(p)}
+  else if(!answeredCorrect){opts.forEach(x=>x.disabled=x.classList.contains('incorrect'));const fb=$('feedback').firstChild;if(fb&&fb.className==='feedback bad')fb.textContent='Not quite. Try another option.';clearInterval(tick);tick=null}
+}
+function openQuestion(i){current=i;answeredCorrect=false;const q=questions[i];$('category').textContent='Scene '+q.stage+' · '+q.term;$('question').textContent=q.q;$('feedback').innerHTML='';$('next').classList.add('hidden');const options=$('options');options.innerHTML='';q.options.forEach((o,j)=>{const b=document.createElement('button');b.className='option';b.textContent=String.fromCharCode(65+j)+'. '+o;b.addEventListener('click',()=>choose(j,b));options.appendChild(b)});$('overlay').classList.remove('hidden');
+  if((cooldownUntil[q.id]||0)>Date.now()){renderCooldown();clearInterval(tick);tick=setInterval(renderCooldown,250)}}
+function choose(j,button){if(answeredCorrect||button.disabled)return;const q=questions[current];const f=$('feedback');f.innerHTML='';const p=document.createElement('div');p.className='feedback '+(j===q.a?'good':'bad');
+  if(j===q.a){answeredCorrect=true;clearInterval(tick);tick=null;p.textContent='✓ Correct! '+q.why;if(!data.done.includes(q.id))data.done.push(q.id);save();draw();sync();Array.from($('options').children).forEach(x=>x.disabled=true);button.classList.add('correct');$('next').classList.remove('hidden');f.appendChild(p)}
+  else{button.classList.add('incorrect');data.mistakes++;save();sync();p.textContent='Not quite. Try another option.';f.appendChild(p);
+    if(WRONG_COOLDOWN_SEC>0){cooldownUntil[q.id]=Date.now()+WRONG_COOLDOWN_SEC*1000;renderCooldown();clearInterval(tick);tick=setInterval(renderCooldown,250)}else{button.disabled=true}}}
+function close(){$('overlay').classList.add('hidden');current=null;clearInterval(tick);tick=null}
+$('close').addEventListener('click',close);$('next').addEventListener('click',close);
+
+function unlock(){const code=$('code').value.trim().toUpperCase();const error=$('error');error.classList.add('hidden');if(code==='FLAT'&&data.stage<2){data.stage=2}else if(code==='LEARN'&&data.stage>=2){data.stage=3}else if(code==='FLAT'&&data.stage>=2||code==='LEARN'&&data.stage===3){error.textContent='This scene is already open.';error.classList.remove('hidden');return}else if(code==='LEARN'&&data.stage===1){error.textContent='Unlock Scene 2 first.';error.classList.remove('hidden');return}else{error.textContent='That code is not recognised. Listen for the code announced by the host.';error.classList.remove('hidden');return}$('code').value='';save();draw();sync()}
+$('unlockBtn').addEventListener('click',unlock);$('code').addEventListener('keydown',e=>{if(e.key==='Enter')unlock()});
+$('reset').addEventListener('click',()=>{if(confirm('Reset your completed squares and scene progress? (A Bingo already on the leaderboard stays there.)')){data={name:data.name,done:[],stage:1,mistakes:data.mistakes,bingoSent:data.bingoSent};save();draw();close();sync()}});
+
+// ---------- name ----------
+function askName(){$('nameOverlay').classList.remove('hidden');$('nameInput').value=data.name;setTimeout(()=>$('nameInput').focus(),50)}
+function setName(){const n=$('nameInput').value.trim().replace(/\s+/g,' ');if(n.length<1||n.length>20){$('nameErr').classList.remove('hidden');return}data.name=n;save();$('nameOverlay').classList.add('hidden');draw();sync()}
+$('nameBtn').addEventListener('click',setName);$('nameInput').addEventListener('keydown',e=>{if(e.key==='Enter')setName()});
+$('playerName').addEventListener('click',askName);$('playerName').style.cursor='pointer';$('playerName').title='Tap to change name';
+
+draw();if(!data.name)askName();initNet();
+</script></body></html>
