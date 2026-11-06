@@ -24,7 +24,8 @@ h2{font-size:18px;text-transform:uppercase;letter-spacing:.06em;color:#1c7460;ma
 <h2>Everyone</h2><div class="grid" id="players"><p class="empty">Waiting for players to join…</p></div>
 </div>
 <script type="module">
-import {FIREBASE_CONFIG, SESSION_ID} from './config.js';
+// Always fetch the newest config.js (bypasses GitHub Pages' 10-minute cache)
+const {FIREBASE_CONFIG, SESSION_ID} = await import('./config.js?v='+Date.now());
 const $=id=>document.getElementById(id);
 // ?session=live overrides config.js, handy for checking an old rehearsal
 const SESSION=new URLSearchParams(location.search).get('session')||SESSION_ID;

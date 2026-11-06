@@ -14,7 +14,8 @@
 <div class="modalOverlay hidden" id="nameOverlay" role="dialog" aria-modal="true" aria-label="Enter your name"><div class="modal"><h3>Welcome</h3><h2>What name should appear on the leaderboard?</h2><p class="instructions">Use your first name so the presenters can find you for the prize.</p><div class="nameRow"><input id="nameInput" maxlength="20" autocomplete="off" placeholder="e.g. Sandra"><button class="action" id="nameBtn">Start</button></div><p id="nameErr" class="error hidden">Please type a name (1 to 20 characters).</p></div></div>
 
 <script type="module">
-import {FIREBASE_CONFIG, SESSION_ID, WRONG_COOLDOWN_SEC} from './config.js';
+// Always fetch the newest config.js (bypasses GitHub Pages' 10-minute cache)
+const {FIREBASE_CONFIG, SESSION_ID, WRONG_COOLDOWN_SEC} = await import('./config.js?v='+Date.now());
 
 const questions=[
 {id:'self',term:'Self-management',stage:1,q:'Which decision can Buurtzorg nursing teams generally make themselves?',options:['Set national insurance reimbursement rates','Recruit team members and organise schedules','Change national healthcare laws','Appoint a regional middle manager'],a:1,why:'Teams manage staffing, schedules and many operational decisions. This illustrates self-determination.'},
